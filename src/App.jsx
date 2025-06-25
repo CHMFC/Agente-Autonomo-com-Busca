@@ -12,7 +12,6 @@ import './App.css';
 const GRID_ROWS = 28;
 const GRID_COLS = 40;
 
-// Esta função auxiliar limpa os dados da busca anterior do grid.
 const resetGridSearchProperties = (grid) => {
   for (const row of grid) {
     for (const node of row) {
@@ -29,17 +28,12 @@ function App() {
   const [agentPos, setAgentPos] = useState(null);
   const [foodPos, setFoodPos] = useState(null);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('A*');
-
   const [visitedNodes, setVisitedNodes] = useState([]);
   const [path, setPath] = useState([]);
   const [gameState, setGameState] = useState('idle');
-
   const [animationSpeed, setAnimationSpeed] = useState(50);
-  const [terrainCosts, setTerrainCosts] = useState({
-    sand: 1,
-    mud: 10,
-    water: 30,
-  });
+  const [terrainCosts, setTerrainCosts] = useState({ sand: 1, mud: 10, water: 30 });
+  const [isMouseDown, setIsMouseDown] = useState(false); // Estado para o mouse
 
   const handleReset = useCallback(() => {
     const { newGrid, newAgentPos, newFoodPos } = generateRandomMap(GRID_ROWS, GRID_COLS, terrainCosts);
@@ -56,28 +50,21 @@ function App() {
   }, [handleReset]);
 
   const animateSearch = (visitedNodesInOrder, finalPath) => {
-    if (!visitedNodesInOrder || visitedNodesInOrder.length === 0) {
-      setGameState('finished');
-      if (finalPath.length > 0) animatePath(finalPath);
-      return;
-    }
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => animatePath(finalPath), animationSpeed * i);
+        return;
+      }
       setTimeout(() => {
         setVisitedNodes(prev => [...prev, visitedNodesInOrder[i]]);
-        if (i === visitedNodesInOrder.length - 1) {
-          if (finalPath.length > 0) animatePath(finalPath);
-          else setGameState('finished');
-        }
-      }, animationSpeed * (i + 1));
+      }, animationSpeed * i);
     }
   };
-
+  
   const animatePath = (finalPath) => {
     setGameState('animatingPath');
     setPath(finalPath);
-    setTimeout(() => {
-      setGameState('finished');
-    }, animationSpeed * finalPath.length * 2);
+    setTimeout(() => setGameState('finished'), animationSpeed * finalPath.length * 2);
   };
 
   const handleStartSearch = () => {
@@ -89,29 +76,17 @@ function App() {
     if (grid.length > 0 && agentPos && foodPos) {
       const newGrid = grid.map(row => row.map(node => ({ ...node })));
       resetGridSearchProperties(newGrid);
-
       const startNode = newGrid[agentPos.row][agentPos.col];
       const goalNode = newGrid[foodPos.row][foodPos.col];
       startNode.gScore = 0;
 
       let searchResult;
       switch (selectedAlgorithm) {
-        case 'BFS':
-          searchResult = bfsSearch(newGrid, startNode, goalNode);
-          break;
-        case 'DFS':
-          searchResult = dfsSearch(newGrid, startNode, goalNode);
-          break;
-        case 'Greedy':
-          searchResult = greedySearch(newGrid, startNode, goalNode);
-          break;
-        case 'UniformCost':
-          searchResult = uniformCostSearch(newGrid, startNode, goalNode);
-          break;
-        case 'A*':
-        default:
-          searchResult = aStarSearch(newGrid, startNode, goalNode);
-          break;
+        case 'BFS': searchResult = bfsSearch(newGrid, startNode, goalNode); break;
+        case 'DFS': searchResult = dfsSearch(newGrid, startNode, goalNode); break;
+        case 'Greedy': searchResult = greedySearch(newGrid, startNode, goalNode); break;
+        case 'UniformCost': searchResult = uniformCostSearch(newGrid, startNode, goalNode); break;
+        default: searchResult = aStarSearch(newGrid, startNode, goalNode); break;
       }
       animateSearch(searchResult.visitedNodesInOrder, searchResult.path);
     } else {
@@ -120,10 +95,34 @@ function App() {
   };
 
   const handleCostChange = (terrain, newCost) => {
-    setTerrainCosts(prevCosts => ({
-      ...prevCosts,
-      [terrain]: newCost
-    }));
+    setTerrainCosts(prevCosts => ({ ...prevCosts, [terrain]: newCost }));
+  };
+
+  // CORREÇÃO: Funções de mouse que estavam faltando
+  const handleMouseDown = (row, col) => {
+    if (gameState !== 'idle') return;
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid);
+    setIsMouseDown(true);
+  };
+
+  const handleMouseEnter = (row, col) => {
+    if (!isMouseDown) return;
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid);
+  };
+
+  const handleMouseUp = () => {
+    setIsMouseDown(false);
+  };
+
+  const getNewGridWithWallToggled = (grid, row, col) => {
+    const newGrid = grid.slice();
+    const node = newGrid[row][col];
+    if (node.isObstacle || (agentPos.row === row && agentPos.col === col) || (foodPos.row === row && foodPos.col === col)) return newGrid;
+    const newNode = { ...node, isObstacle: !node.isObstacle, cost: Infinity };
+    newGrid[row][col] = newNode;
+    return newGrid;
   };
 
   return (
@@ -136,7 +135,6 @@ function App() {
         gameState={gameState}
         animationSpeed={animationSpeed}
         onSpeedChange={setAnimationSpeed}
-        // As props que estavam faltando foram adicionadas de volta:
         terrainCosts={terrainCosts}
         onCostChange={handleCostChange}
       />
@@ -147,6 +145,9 @@ function App() {
           foodPos={foodPos}
           path={path}
           visitedNodes={visitedNodes}
+          onMouseDown={handleMouseDown}
+          onMouseEnter={handleMouseEnter}
+          onMouseUp={handleMouseUp}
         />
       </div>
     </div>
