@@ -1,0 +1,77 @@
+/* src/components/Cell/Cell.css */
+
+.cell {
+  width: 35px;  /* AUMENTADO de 30px para 35px */
+  height: 35px; /* AUMENTADO de 30px para 35px */
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: relative; /* Essencial para o posicionamento dos filhos e do overlay */
+  transition: transform 0.2s ease;
+}
+
+.cell:hover {
+    transform: scale(1.1); /* Efeito de zoom sutil ao passar o mouse */
+}
+
+/* 1. ESTILOS DOS TERRENOS (Fundo da célula) */
+.cell-sand { background-image: url('/images/sand.png'); }
+.cell-mud { background-image: url('/images/mud.png'); }
+.cell-water { background-image: url('/images/water.png'); }
+.cell-obstacle { background-image: url('/images/obstacle.png'); }
+
+/* 2. ESTILOS DAS ENTIDADES (Agente e Comida) */
+/* Estas regras agora se aplicam aos <div>s internos */
+.agent-entity,
+.food-entity {
+  width: 100%;
+  height: 100%;
+  background-size: contain; /* 'contain' é melhor para personagens, para não cortar a imagem */
+  background-repeat: no-repeat;
+  background-position: center;
+  /* z-index garante que a entidade fique por cima do overlay da busca */
+  position: relative;
+  z-index: 2;
+}
+
+.agent-entity {
+  background-image: url('/images/agent.png');
+}
+
+.food-entity {
+  background-image: url('/images/food.png');
+}
+
+/* ESTILOS DOS OVERLAYS DA BUSCA (Visitado e Caminho) */
+.cell.visited::after,
+.cell.path::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.cell.visited::after {
+  background-color: rgba(200, 200, 244, 0.8);
+  animation: visited-animation 0.5s forwards;
+}
+
+.cell.path::after {
+  background-color: rgba(255, 235, 59, 0.7);
+}
+
+@keyframes visited-animation {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

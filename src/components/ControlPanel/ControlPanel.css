@@ -1,0 +1,120 @@
+/* src/components/ControlPanel/ControlPanel.css */
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Aumenta o espaço entre os grupos de controle */
+  align-items: center; /* Centraliza os grupos */
+  width: 100%;
+  max-width: 320px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+}
+
+.control-group label {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #b0bec5;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.control-panel select,
+.control-panel button {
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.control-panel select {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+/* Grupo de botões */
+.button-group {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column; /* Botões empilhados */
+  gap: 15px; /* Espaço entre os botões */
+}
+
+.control-panel button {
+  border: none;
+}
+
+.start-button {
+  background-color: #4caf50; /* Verde para iniciar */
+  color: white;
+}
+
+.reset-button {
+  background-color: #f44336; /* Vermelho para resetar */
+  color: white;
+}
+
+.control-panel button:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-panel button:disabled {
+  background-color: #495057;
+  color: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- NOVOS ESTILOS PARA O SELETOR DE VELOCIDADE --- */
+.speed-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+}
+
+.speed-selector button {
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+}
+
+.speed-selector button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.speed-selector button:disabled {
+  background-color: transparent;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.speed-display {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  flex-grow: 1;
+  text-align: center;
+  user-select: none; /* Impede que o texto seja selecionado */
+}

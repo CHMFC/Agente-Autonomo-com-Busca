@@ -1,0 +1,37 @@
+/* Este arquivo contém os estilos que antes estavam em App.css sob a classe .left-panel */
+
+.main-panel-container {
+  width: 450px;
+  flex-shrink: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
+  background-color: rgba(18, 25, 39, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: width 0.3s ease; /* Animação suave se a largura mudar */
+}
+
+.main-panel-container h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.description {
+  margin-top: 50px;
+  color: #b0bec5;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 320px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
