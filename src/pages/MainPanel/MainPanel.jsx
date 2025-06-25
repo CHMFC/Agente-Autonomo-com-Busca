@@ -1,3 +1,4 @@
+// src/pages/MainPanel/MainPanel.jsx
 import React from 'react';
 import ControlPanel from '../../components/ControlPanel/ControlPanel';
 import './MainPanel.css';
@@ -32,7 +33,7 @@ function MainPanel(props) {
         onCostChange={onCostChange}
       />
       <div className="description">
-        <p>Selecione um algoritmo de busca e clique em "Iniciar Busca" para ver o agente encontrar o caminho. Use "Gerar Novo Mapa" para testar o algoritmo em diferentes cenários aleatórios.</p>
+        <p>Selecione um algoritmo de busca e clique em "Iniciar Busca" para ver o agente encontrar o caminho.</p>
         <p><b>Grupo formado por:</b><br></br>
             Carlos Henrique Matos Fontaine Costa <br></br>
             Lucas Emmanuel Gomes de Lucena <br></br>

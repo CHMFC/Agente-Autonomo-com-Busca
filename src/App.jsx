@@ -23,15 +23,24 @@ function App() {
   // Valor inicial de 25ms por passo.
   const [animationSpeed, setAnimationSpeed] = useState(25);
 
+  // --- O ESTADO DOS CUSTOS DO TERRENO VIVE AQUI ---
+  const [terrainCosts, setTerrainCosts] = useState({
+    sand: 1,
+    mud: 5,
+    water: 10,
+  });
+
+
   const handleReset = useCallback(() => {
-    const { newGrid, newAgentPos, newFoodPos } = generateRandomMap(GRID_ROWS, GRID_COLS);
+    // Passa os custos do terreno para o gerador de mapa
+    const { newGrid, newAgentPos, newFoodPos } = generateRandomMap(GRID_ROWS, GRID_COLS, terrainCosts);
     setGrid(newGrid);
     setAgentPos(newAgentPos);
     setFoodPos(newFoodPos);
     setPath([]);
     setVisitedNodes([]);
     setGameState('idle');
-  }, []);
+  }, [terrainCosts]); // Adiciona terrainCosts como dependência
 
   useEffect(() => {
     handleReset();
@@ -77,6 +86,14 @@ function App() {
     }
   };
 
+  const handleCostChange = (terrain, newCost) => {
+    setTerrainCosts(prevCosts => ({
+      ...prevCosts,
+      [terrain]: newCost
+    }));
+  };
+
+
   return (
     <div className="app">
       <MainPanel 
@@ -88,6 +105,9 @@ function App() {
         // --- PASSANDO AS PROPS DE VELOCIDADE PARA O PAINEL ---
         animationSpeed={animationSpeed}
         onSpeedChange={setAnimationSpeed}
+        // --- PASSANDO AS PROPS DE CUSTO PARA O PAINEL ---
+        terrainCosts={terrainCosts}
+        onCostChange={handleCostChange}
       />
       <div className="right-panel">
         <Grid 

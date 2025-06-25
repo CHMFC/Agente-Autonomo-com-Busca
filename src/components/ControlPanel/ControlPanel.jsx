@@ -11,6 +11,8 @@ function ControlPanel(props) {
     gameState,
     onSpeedChange,
     animationSpeed, // Recebe o valor numérico
+    terrainCosts,
+    onCostChange,
   } = props;
 
   const isSearching = gameState === 'searching' || gameState === 'animatingPath';
@@ -23,6 +25,12 @@ function ControlPanel(props) {
   const handleIncrease = () => {
     // Garante que onSpeedChange seja chamado com um novo valor
     onSpeedChange(prevSpeed => Math.min(100, prevSpeed + 5));
+  };
+
+  const handleCostInputChange = (e) => {
+    const { name, value } = e.target;
+    const newCost = Math.max(1, parseInt(value, 10) || 1); // Garante que o custo seja pelo menos 1
+    onCostChange(name, newCost);
   };
 
   return (
@@ -48,6 +56,49 @@ function ControlPanel(props) {
           {/* Exibe o valor da prop `animationSpeed` */}
           <span className="speed-display">{animationSpeed} ms</span>
           <button onClick={handleIncrease} disabled={isSearching || animationSpeed >= 100}>+</button>
+        </div>
+      </div>
+
+      {/* --- NOVA SEÇÃO PARA CUSTOS DE TERRENO --- */}
+      <div className="control-group">
+        <label>Custos dos Terrenos</label>
+        <div className="terrain-costs">
+          <div className="terrain-cost-input">
+            <label htmlFor="sand">Areia</label>
+            <input 
+              type="number"
+              id="sand"
+              name="sand"
+              value={terrainCosts.sand}
+              onChange={handleCostInputChange}
+              disabled={isSearching}
+              min="1"
+            />
+          </div>
+          <div className="terrain-cost-input">
+            <label htmlFor="mud">Lama</label>
+            <input 
+              type="number"
+              id="mud"
+              name="mud"
+              value={terrainCosts.mud}
+              onChange={handleCostInputChange}
+              disabled={isSearching}
+              min="1"
+            />
+          </div>
+          <div className="terrain-cost-input">
+            <label htmlFor="water">Água</label>
+            <input 
+              type="number"
+              id="water"
+              name="water"
+              value={terrainCosts.water}
+              onChange={handleCostInputChange}
+              disabled={isSearching}
+              min="1"
+            />
+          </div>
         </div>
       </div>
 

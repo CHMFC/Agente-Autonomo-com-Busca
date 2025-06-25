@@ -118,3 +118,41 @@
   text-align: center;
   user-select: none; /* Impede que o texto seja selecionado */
 }
+
+.terrain-costs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.terrain-cost-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.terrain-cost-input label {
+  color: #eceff1;
+  font-weight: 500;
+  margin: 0;
+}
+
+.terrain-cost-input input {
+  width: 60px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.terrain-cost-input input::-webkit-outer-spin-button,
+.terrain-cost-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

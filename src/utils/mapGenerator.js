@@ -5,11 +5,11 @@
  * Usar um objeto de constantes torna o código mais limpo e fácil de modificar.
  * `cost: Infinity` é uma forma padrão de representar um obstáculo em algoritmos de busca.
  */
-const TERRAIN_TYPES = {
+const TERRAIN_DEFAULTS = {
   OBSTACLE: { type: 'obstacle', cost: Infinity, isObstacle: true },
-  SAND:     { type: 'sand',     cost: 1,        isObstacle: false },
-  MUD:      { type: 'mud',      cost: 5,        isObstacle: false }, // Atoleiro
-  WATER:    { type: 'water',    cost: 10,       isObstacle: false },
+  SAND:     { type: 'sand',     isObstacle: false }, 
+  MUD:      { type: 'mud',      isObstacle: false }, // Atoleiro
+  WATER:    { type: 'water',    isObstacle: false },
 };
 
 /**
@@ -43,10 +43,18 @@ const getRandomEmptyPosition = (grid, excludedPositions = []) => {
  * A função principal que gera o mapa aleatório completo.
  * @param {number} rows - O número de linhas do grid.
  * @param {number} cols - O número de colunas do grid.
+ * @param {object} terrainCosts - Um objeto com os custos de cada terreno.
  * @returns {Object} Um objeto contendo o novo grid e as posições do agente e da comida.
  */
-export function generateRandomMap(rows, cols) {
+export function generateRandomMap(rows, cols, terrainCosts) {
   const newGrid = [];
+
+  const TERRAIN_TYPES = {
+    OBSTACLE: { ...TERRAIN_DEFAULTS.OBSTACLE },
+    SAND:     { ...TERRAIN_DEFAULTS.SAND, cost: terrainCosts.sand },
+    MUD:      { ...TERRAIN_DEFAULTS.MUD, cost: terrainCosts.mud },
+    WATER:    { ...TERRAIN_DEFAULTS.WATER, cost: terrainCosts.water },
+  };
 
   // Passo 1: Gerar o terreno para cada célula do grid
   for (let row = 0; row < rows; row++) {
