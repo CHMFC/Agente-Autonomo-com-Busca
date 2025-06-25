@@ -16,9 +16,12 @@ const Grid = ({
     return <div className="grid-container">Carregando grid...</div>;
   }
 
+  // Esta função determina a aparência de cada célula (nó) no grid.
+  // Ela estava faltando na minha resposta anterior.
   const getNodeType = (node) => {
-    if (node.row === agentPos?.row && node.col === agentPos?.col) return 'agent';
-    if (node.row === foodPos?.row && node.col === foodPos?.col) return 'food';
+    if (agentPos && node.row === agentPos.row && node.col === agentPos.col) return 'agent';
+    if (foodPos && node.row === foodPos.row && node.col === foodPos.col) return 'food';
+    // É importante checar o caminho ANTES dos nós visitados, pois o caminho faz parte dos visitados.
     if (path.some(p => p.row === node.row && p.col === node.col)) return 'path';
     if (visitedNodes.some(v => v.row === node.row && v.col === node.col)) return 'visited';
     if (node.isObstacle) return 'obstacle';
@@ -26,11 +29,12 @@ const Grid = ({
   };
 
   return (
-    <div className="grid-container">
+    <div className="grid-container" onMouseUp={onMouseUp}>
       <div className="grid">
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row">
             {row.map((node) => {
+              // Chamamos a função para obter o tipo do nó
               const nodeType = getNodeType(node);
               return (
                 <Node
@@ -38,9 +42,8 @@ const Grid = ({
                   type={nodeType}
                   onMouseDown={() => onMouseDown(node.row, node.col)}
                   onMouseEnter={() => onMouseEnter(node.row, node.col)}
-                  onMouseUp={onMouseUp}
-                  // A mudança principal está aqui: passamos o gScore do nó.
-                  // Ele será usado como 'cost' dentro do componente Node.
+                  // O onMouseUp foi movido para o container principal para melhor controle
+                  // onMouseUp={onMouseUp} 
                   cost={node.gScore}
                 />
               );
