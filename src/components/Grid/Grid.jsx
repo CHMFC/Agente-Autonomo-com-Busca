@@ -1,42 +1,55 @@
-// src/components/Grid/Grid.jsx
 import React from 'react';
-import Cell from '../Cell/Cell';
+import Node from '../Node/Node';
 import './Grid.css';
 
-// MUDANÇA IMPORTANTE: Adicionamos agentPos e foodPos como props
-function Grid({ grid, agentPos, foodPos, path, visitedNodes }) {
-  // Se o grid ainda não foi gerado, não renderize nada para evitar erros.
-  if (!grid.length) {
-    return null;
+const Grid = ({
+  grid,
+  visitedNodes,
+  path,
+  agentPos,
+  foodPos,
+  onMouseDown,
+  onMouseEnter,
+  onMouseUp,
+}) => {
+  if (!grid || grid.length === 0) {
+    return <div className="grid-container">Carregando grid...</div>;
   }
 
-  return (
-    <div className="grid">
-      {grid.map((row, rowIndex) => (
-        <div key={rowIndex} className="grid-row">
-          {row.map((cell) => {
-            // Lógica para verificar se esta célula contém o agente ou a comida
-            const isAgent = agentPos && agentPos.row === cell.row && agentPos.col === cell.col;
-            const isFood = foodPos && foodPos.row === cell.row && foodPos.col === cell.col;
-            const isPath = path.some(p => p.row === cell.row && p.col === cell.col);
-            const isVisited = visitedNodes.some(v => v.row === cell.row && v.col === cell.col);
+  const getNodeType = (node) => {
+    if (node.row === agentPos?.row && node.col === agentPos?.col) return 'agent';
+    if (node.row === foodPos?.row && node.col === foodPos?.col) return 'food';
+    if (path.some(p => p.row === node.row && p.col === node.col)) return 'path';
+    if (visitedNodes.some(v => v.row === node.row && v.col === node.col)) return 'visited';
+    if (node.isObstacle) return 'obstacle';
+    return 'empty';
+  };
 
-            return (
-              <Cell
-                key={cell.col}
-                type={cell.type}
-                // Passando as props corretas para o componente Cell
-                isAgent={isAgent}
-                isFood={isFood}
-                isPath={isPath}
-                isVisited={isVisited}
-              />
-            );
-          })}
-        </div>
-      ))}
+  return (
+    <div className="grid-container">
+      <div className="grid">
+        {grid.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid-row">
+            {row.map((node) => {
+              const nodeType = getNodeType(node);
+              return (
+                <Node
+                  key={node.id}
+                  type={nodeType}
+                  onMouseDown={() => onMouseDown(node.row, node.col)}
+                  onMouseEnter={() => onMouseEnter(node.row, node.col)}
+                  onMouseUp={onMouseUp}
+                  // A mudança principal está aqui: passamos o gScore do nó.
+                  // Ele será usado como 'cost' dentro do componente Node.
+                  cost={node.gScore}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
 
-export default Grid;
+export default React.memo(Grid);
