@@ -29,7 +29,7 @@ function ControlPanel(props) {
 
   const handleCostInputChange = (e) => {
     const { name, value } = e.target;
-    const newCost = Math.max(1, parseInt(value, 10) || 1); // Garante que o custo seja pelo menos 1
+    const newCost = Math.max(1, parseInt(value, 10) || 1); 
     onCostChange(name, newCost);
   };
 

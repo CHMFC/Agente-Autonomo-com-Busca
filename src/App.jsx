@@ -21,13 +21,13 @@ function App() {
 
   // --- O ESTADO DA VELOCIDADE VIVE AQUI ---
   // Valor inicial de 25ms por passo.
-  const [animationSpeed, setAnimationSpeed] = useState(25);
+  const [animationSpeed, setAnimationSpeed] = useState(50);
 
   // --- O ESTADO DOS CUSTOS DO TERRENO VIVE AQUI ---
   const [terrainCosts, setTerrainCosts] = useState({
     sand: 1,
-    mud: 5,
-    water: 10,
+    mud: 10,
+    water: 30,
   });
 
 
