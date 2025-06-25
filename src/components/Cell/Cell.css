@@ -1,77 +1,85 @@
-/* src/components/Cell/Cell.css */
+/* Arquivo: src/components/Cell/Cell.css */
 
 .cell {
-  width: 35px;  /* AUMENTADO de 30px para 35px */
-  height: 35px; /* AUMENTADO de 30px para 35px */
-  box-sizing: border-box;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  position: relative; /* Essencial para o posicionamento dos filhos e do overlay */
-  transition: transform 0.2s ease;
-}
-
-.cell:hover {
-    transform: scale(1.1); /* Efeito de zoom sutil ao passar o mouse */
-}
-
-/* 1. ESTILOS DOS TERRENOS (Fundo da célula) */
-.cell-sand { background-image: url('/images/sand.png'); }
-.cell-mud { background-image: url('/images/mud.png'); }
-.cell-water { background-image: url('/images/water.png'); }
-.cell-obstacle { background-image: url('/images/obstacle.png'); }
-
-/* 2. ESTILOS DAS ENTIDADES (Agente e Comida) */
-/* Estas regras agora se aplicam aos <div>s internos */
-.agent-entity,
-.food-entity {
-  width: 100%;
-  height: 100%;
-  background-size: contain; /* 'contain' é melhor para personagens, para não cortar a imagem */
-  background-repeat: no-repeat;
-  background-position: center;
-  /* z-index garante que a entidade fique por cima do overlay da busca */
+  width: 3vh;
+  height: 3vh;
+  display: inline-block;
+  border-top: 1px solid #cce;
+  border-left: 1px solid #cce;
   position: relative;
-  z-index: 2;
+  background-color: #f0e68c;
 }
 
-.agent-entity {
-  background-image: url('/images/agent.png');
+/* --- Terrenos com Imagens --- */
+.cell-sand {
+  background-image: url('/images/sand.png');
+  background-size: cover;
+}
+.cell-mud {
+  background-image: url('/images/mud.png');
+  background-size: cover;
+}
+.cell-water {
+  background-image: url('/images/water.png');
+  background-size: cover;
+}
+.cell-obstacle {
+  background-image: url('/images/obstacle.png');
+  background-size: cover;
 }
 
-.food-entity {
-  background-image: url('/images/food.png');
-}
-
-/* ESTILOS DOS OVERLAYS DA BUSCA (Visitado e Caminho) */
-.cell.visited::after,
-.cell.path::after {
+/* --- Camada para Visitado e Caminho --- */
+.cell-visited::after, .cell-path::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   z-index: 1;
-  border-radius: 2px;
+}
+.cell-visited::after {
+  animation: visitedAnimation 0.5s forwards;
+}
+.cell-path::after {
+  animation: pathAnimation 0.5s forwards;
 }
 
-.cell.visited::after {
-  background-color: rgba(200, 200, 244, 0.8);
-  animation: visited-animation 0.5s forwards;
+/* --- Imagens para Agente e Comida --- */
+.cell-agent::before, .cell-food::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-size: contain;      /* Usa 'contain' para garantir que a imagem inteira apareça */
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 2;
+}
+.cell-agent::before {
+  background-image: url('/images/agent.png'); /* Imagem do Agente */
+}
+.cell-food::before {
+  background-image: url('/images/food.png');  /* Imagem da Comida */
 }
 
-.cell.path::after {
-  background-color: rgba(255, 235, 59, 0.7);
+/* --- Custo --- */
+.cell-cost {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: black;
+  text-shadow: 0 0 3px white, 0 0 3px white;
+  user-select: none;
+  z-index: 3;
 }
 
-@keyframes visited-animation {
-  from {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+/* --- Animações --- */
+@keyframes visitedAnimation {
+  from { background-color: transparent; }
+  to { background-color: rgba(255, 219, 88, 0.6); }
+}
+@keyframes pathAnimation {
+  from { background-color: transparent; }
+  to { background-color: rgba(0, 255, 255, 0.7); }
 }

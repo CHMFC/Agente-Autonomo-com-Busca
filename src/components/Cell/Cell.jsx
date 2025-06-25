@@ -1,20 +1,37 @@
-// src/components/Cell/Cell.jsx
 import React from 'react';
 import './Cell.css';
 
-function Cell({ type, isAgent, isFood, isPath, isVisited }) {
-  // A classe da célula principal agora só se preocupa com o terreno e o estado da busca
-  const cellClassName = `cell cell-${type} ${isPath ? 'path' : ''} ${isVisited ? 'visited' : ''}`;
+const Cell = ({
+    type,
+    isAgent,
+    isFood,
+    isPath,
+    isVisited,
+    cost,
+    onMouseDown,
+    onMouseEnter,
+}) => {
+    // CORREÇÃO: Garante que isAgent e isFood sobreponham outros estilos
+    const cellTypeClass = isAgent ? 'cell-agent' : isFood ? 'cell-food' : `cell-${type}`;
 
-  return (
-    <div className={cellClassName}>
-      {/* Renderizamos um elemento filho APENAS se for a célula do agente */}
-      {isAgent && <div className="agent-entity"></div>}
+    const classNames = [
+        'cell',
+        cellTypeClass,
+        isPath ? 'cell-path' : '',
+        isVisited ? 'cell-visited' : '',
+    ].join(' ');
 
-      {/* Renderizamos um elemento filho APENAS se for a célula da comida */}
-      {isFood && <div className="food-entity"></div>}
-    </div>
-  );
-}
+    const shouldShowCost = isVisited && !isPath && !isAgent && !isFood && cost > 0 && cost !== Infinity;
 
-export default Cell;
+    return (
+        <div
+            className={classNames}
+            onMouseDown={onMouseDown}
+            onMouseEnter={onMouseEnter}
+        >
+            {shouldShowCost && <span className="cell-cost">{Math.round(cost)}</span>}
+        </div>
+    );
+};
+
+export default React.memo(Cell);
