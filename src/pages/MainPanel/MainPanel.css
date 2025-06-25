@@ -1,5 +1,4 @@
-/* Este arquivo contém os estilos que antes estavam em App.css sob a classe .left-panel */
-
+/* src/pages/MainPanel/MainPanel.css */
 .main-panel-container {
   width: 450px;
   flex-shrink: 0;
@@ -15,7 +14,6 @@
   -webkit-backdrop-filter: blur(8px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
-  transition: width 0.3s ease; /* Animação suave se a largura mudar */
 }
 
 .main-panel-container h1 {
@@ -34,4 +32,9 @@
   max-width: 320px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 20px;
+  text-align: left;
+}
+
+.description p {
+    margin: 10px 0;
 }
