@@ -11,12 +11,15 @@ const Cell = ({
     onMouseDown,
     onMouseEnter,
 }) => {
-    // CORREÇÃO: Garante que isAgent e isFood sobreponham outros estilos
-    const cellTypeClass = isAgent ? 'cell-agent' : isFood ? 'cell-food' : `cell-${type}`;
+    // Define a classe base do terreno
+    const terrainClass = `cell-${type}`;
 
+    // Adiciona as classes do agente, comida, caminho e visitado conforme necessário
     const classNames = [
         'cell',
-        cellTypeClass,
+        terrainClass, // Sempre aplica a classe do terreno
+        isAgent ? 'cell-agent' : '',
+        isFood ? 'cell-food' : '',
         isPath ? 'cell-path' : '',
         isVisited ? 'cell-visited' : '',
     ].join(' ');

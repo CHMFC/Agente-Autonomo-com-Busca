@@ -1,5 +1,4 @@
 body {
-  /* Mantém o background original */
   background-color: #1a202c; /* Cor de fundo escura de fallback */
   color: #eceff1;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,7 +15,7 @@ body {
 /* O container principal agora é uma linha que ocupa toda a tela */
 .app {
   display: flex;
-  flex-direction: row; /* A MUDANÇA PRINCIPAL: de coluna para linha */
+  flex-direction: row; 
   width: 98vw;
   height: 100vh;
 }

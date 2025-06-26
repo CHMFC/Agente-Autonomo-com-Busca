@@ -58,6 +58,7 @@
   background-image: url('/images/agent.png'); /* Imagem do Agente */
 }
 .cell-food::before {
+  z-index: 1;
   background-image: url('/images/food.png');  /* Imagem da Comida */
 }
 

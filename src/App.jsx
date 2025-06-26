@@ -33,7 +33,6 @@ function App() {
     const [terrainCosts, setTerrainCosts] = useState({ sand: 1, mud: 10, water: 30 });
     const [isMouseDown, setIsMouseDown] = useState(false);
     
-    // --- NOVOS ESTADOS E REFS PARA CONTROLE DA ANIMAÇÃO ---
     const [isPaused, setIsPaused] = useState(false);
     const timeoutRef = useRef(null);
     const animationStateRef = useRef({
@@ -50,7 +49,6 @@ function App() {
     const runAnimation = useCallback(() => {
         const { visitedNodes, path, visitedIndex, pathIndex } = animationStateRef.current;
 
-        // Animação dos nós visitados
         if (visitedIndex < visitedNodes.length) {
             const node = visitedNodes[visitedIndex];
             setGrid(prevGrid => {
@@ -65,7 +63,6 @@ function App() {
             return;
         }
 
-        // Animação do caminho
         if (pathIndex < path.length) {
             if (pathIndex === 0) setGameState('animatingPath');
             setPath(prev => [...prev, path[pathIndex]]);
@@ -77,7 +74,6 @@ function App() {
         setGameState('done');
     }, [animationSpeed]);
 
-    // Efeito que controla a execução/pausa da animação
     useEffect(() => {
         const isAnimating = gameState === 'searching' || gameState === 'animatingPath';
         if (isAnimating && !isPaused) {
@@ -87,7 +83,7 @@ function App() {
         }
     }, [gameState, isPaused, runAnimation]);
 
-    const handleReset = useCallback(() => {
+    const handleNewMap = useCallback(() => {
         clearAnimation();
         const { newGrid, newAgentPos, newFoodPos } = generateRandomMap(GRID_ROWS, GRID_COLS, terrainCosts);
         setGrid(newGrid);
@@ -99,9 +95,27 @@ function App() {
         setIsPaused(false);
     }, [terrainCosts]);
 
+    const handleReset = useCallback(() => {
+        clearAnimation();
+        setPath([]);
+        setVisitedNodes([]);
+        const newGrid = grid.map(row => row.map(node => ({ ...node })));
+        resetGridSearchProperties(newGrid);
+        setGrid(newGrid);
+        setGameState('idle');
+        setIsPaused(false);
+        animationStateRef.current = {
+            visitedNodes: [],
+            path: [],
+            visitedIndex: 0,
+            pathIndex: 0,
+        };
+    }, [grid]);
+
+
     useEffect(() => {
-        handleReset();
-    }, [handleReset]);
+        handleNewMap();
+    }, [handleNewMap]);
     
     const handleStartSearch = () => {
         if (gameState !== 'idle') return;
@@ -132,7 +146,7 @@ function App() {
             pathIndex: 0,
         };
         
-        setGameState('searching'); // Inicia a animação via useEffect
+        setGameState('searching');
     };
 
     const handlePauseResume = () => {
@@ -174,7 +188,7 @@ function App() {
         <div className="app">
             <MainPanel
                 onStart={handleStartSearch}
-                onReset={handleReset}
+                onReset={handleNewMap}
                 onAlgoChange={setSelectedAlgorithm}
                 selectedAlgorithm={selectedAlgorithm}
                 gameState={gameState}

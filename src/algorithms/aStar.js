@@ -41,7 +41,6 @@ export function aStarSearch(grid, startNode, goalNode) {
         continue;
       }
 
-      // Custo para se mover para o vizinho (gScore)
       const tentativeGScore = current.gScore + (neighbor.cost || 1);
 
       // Verifica se o vizinho já está na fila de prioridade
@@ -52,7 +51,7 @@ export function aStarSearch(grid, startNode, goalNode) {
         neighbor.previousNode = current;
         neighbor.gScore = tentativeGScore;
         neighbor.hScore = manhattanDistance(neighbor, goalNode);
-        neighbor.fScore = neighbor.gScore + neighbor.hScore;
+        neighbor.fScore = neighbor.gScore + 3*neighbor.hScore;
         openSet.push(neighbor);
       } else if (tentativeGScore < existingNeighbor.gScore) {
         // Se já está na fila, mas encontramos um caminho melhor (mais barato), atualiza seus custos
