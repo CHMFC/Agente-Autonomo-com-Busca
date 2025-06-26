@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Grid from './components/Grid/Grid';
 import MainPanel from './pages/MainPanel/MainPanel';
 import { generateRandomMap } from './utils/mapGenerator';
@@ -32,8 +32,63 @@ function App() {
     const [animationSpeed, setAnimationSpeed] = useState(50);
     const [terrainCosts, setTerrainCosts] = useState({ sand: 1, mud: 10, water: 30 });
     const [isMouseDown, setIsMouseDown] = useState(false);
+    
+    // --- NOVOS ESTADOS E REFS PARA CONTROLE DA ANIMAÇÃO ---
+    const [isPaused, setIsPaused] = useState(false);
+    const timeoutRef = useRef(null);
+    const animationStateRef = useRef({
+        visitedNodes: [],
+        path: [],
+        visitedIndex: 0,
+        pathIndex: 0
+    });
+
+    const clearAnimation = () => {
+        clearTimeout(timeoutRef.current);
+    };
+
+    const runAnimation = useCallback(() => {
+        const { visitedNodes, path, visitedIndex, pathIndex } = animationStateRef.current;
+
+        // Animação dos nós visitados
+        if (visitedIndex < visitedNodes.length) {
+            const node = visitedNodes[visitedIndex];
+            setGrid(prevGrid => {
+                const newGrid = prevGrid.slice();
+                const gridNode = newGrid[node.row][node.col];
+                if (gridNode) gridNode.gScore = node.gScore;
+                return newGrid;
+            });
+            setVisitedNodes(prev => [...prev, node]);
+            animationStateRef.current.visitedIndex++;
+            timeoutRef.current = setTimeout(runAnimation, animationSpeed);
+            return;
+        }
+
+        // Animação do caminho
+        if (pathIndex < path.length) {
+            if (pathIndex === 0) setGameState('animatingPath');
+            setPath(prev => [...prev, path[pathIndex]]);
+            animationStateRef.current.pathIndex++;
+            timeoutRef.current = setTimeout(runAnimation, animationSpeed);
+            return;
+        }
+
+        setGameState('done');
+    }, [animationSpeed]);
+
+    // Efeito que controla a execução/pausa da animação
+    useEffect(() => {
+        const isAnimating = gameState === 'searching' || gameState === 'animatingPath';
+        if (isAnimating && !isPaused) {
+            runAnimation();
+        } else {
+            clearAnimation();
+        }
+    }, [gameState, isPaused, runAnimation]);
 
     const handleReset = useCallback(() => {
+        clearAnimation();
         const { newGrid, newAgentPos, newFoodPos } = generateRandomMap(GRID_ROWS, GRID_COLS, terrainCosts);
         setGrid(newGrid);
         setAgentPos(newAgentPos);
@@ -41,71 +96,49 @@ function App() {
         setPath([]);
         setVisitedNodes([]);
         setGameState('idle');
+        setIsPaused(false);
     }, [terrainCosts]);
 
     useEffect(() => {
         handleReset();
     }, [handleReset]);
     
-    const animateSearch = (visitedNodesInOrder, finalPath) => {
-        for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-            setTimeout(() => {
-                if (i === visitedNodesInOrder.length) {
-                    animatePath(finalPath);
-                    return;
-                }
-                const node = visitedNodesInOrder[i];
-                setGrid(prevGrid => {
-                    const newGrid = prevGrid.slice();
-                    const gridNode = newGrid[node.row][node.col];
-                    if (gridNode) {
-                        gridNode.gScore = node.gScore;
-                    }
-                    return newGrid;
-                });
-                setVisitedNodes(prev => [...prev, node]);
-            }, 10 * i);
-        }
-    };
-
-    const animatePath = (finalPath) => {
-        setGameState('animatingPath');
-        for (let i = 0; i < finalPath.length; i++) {
-            setTimeout(() => {
-                setPath(prev => [...prev, finalPath[i]]);
-                if (i === finalPath.length - 1) {
-                    setGameState('done');
-                }
-            }, 50 * i);
-        }
-    };
-
     const handleStartSearch = () => {
-        if (gameState === 'searching' || gameState === 'animatingPath') return;
-        setGameState('searching');
+        if (gameState !== 'idle') return;
+        
         setVisitedNodes([]);
         setPath([]);
+        setIsPaused(false);
 
-        if (grid.length > 0 && agentPos && foodPos) {
-            const newGrid = grid.map(row => row.map(node => ({ ...node })));
-            resetGridSearchProperties(newGrid);
-            const startNode = newGrid[agentPos.row][agentPos.col];
-            const goalNode = newGrid[foodPos.row][foodPos.col];
-            startNode.gScore = 0;
-            let searchResult;
-            switch (selectedAlgorithm) {
-                case 'BFS': searchResult = bfsSearch(newGrid, startNode, goalNode); break;
-                case 'DFS': searchResult = dfsSearch(newGrid, startNode, goalNode); break;
-                case 'Greedy': searchResult = greedySearch(newGrid, startNode, goalNode); break;
-                case 'UniformCost': searchResult = uniformCostSearch(newGrid, startNode, goalNode); break;
-                default: searchResult = aStarSearch(newGrid, startNode, goalNode); break;
-            }
-            animateSearch(searchResult.visitedNodesInOrder, searchResult.path);
-        } else {
-            setGameState('idle');
+        const newGrid = grid.map(row => row.map(node => ({ ...node })));
+        resetGridSearchProperties(newGrid);
+        const startNode = newGrid[agentPos.row][agentPos.col];
+        const goalNode = newGrid[foodPos.row][foodPos.col];
+        startNode.gScore = 0;
+        
+        let searchResult;
+        switch (selectedAlgorithm) {
+            case 'BFS': searchResult = bfsSearch(newGrid, startNode, goalNode); break;
+            case 'DFS': searchResult = dfsSearch(newGrid, startNode, goalNode); break;
+            case 'Greedy': searchResult = greedySearch(newGrid, startNode, goalNode); break;
+            case 'UniformCost': searchResult = uniformCostSearch(newGrid, startNode, goalNode); break;
+            default: searchResult = aStarSearch(newGrid, startNode, goalNode); break;
         }
+        
+        animationStateRef.current = {
+            visitedNodes: searchResult.visitedNodesInOrder,
+            path: searchResult.path,
+            visitedIndex: 0,
+            pathIndex: 0,
+        };
+        
+        setGameState('searching'); // Inicia a animação via useEffect
     };
-    
+
+    const handlePauseResume = () => {
+        setIsPaused(prev => !prev);
+    };
+
     const handleCostChange = (terrain, newCost) => {
         setTerrainCosts(prev => ({ ...prev, [terrain]: newCost }));
     };
@@ -134,6 +167,9 @@ function App() {
         setIsMouseDown(false);
     };
 
+    const canPause = gameState === 'searching' || gameState === 'animatingPath';
+    const canReset = canPause || gameState === 'done';
+
     return (
         <div className="app">
             <MainPanel
@@ -148,6 +184,14 @@ function App() {
                 onCostChange={handleCostChange}
             />
             <div className="right-panel">
+                <div className="grid-controls">
+                    <button onClick={handlePauseResume} disabled={!canPause}>
+                        {isPaused ? 'Continuar' : 'Pausar'}
+                    </button>
+                    <button onClick={handleReset} disabled={!canReset}>
+                        Resetar
+                    </button>
+                </div>
                 <Grid
                     grid={grid}
                     agentPos={agentPos}
