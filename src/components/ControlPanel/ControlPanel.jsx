@@ -10,21 +10,32 @@ function ControlPanel(props) {
     selectedAlgorithm,
     gameState,
     onSpeedChange,
-    animationSpeed, // Recebe o valor numérico
+    animationSpeed,
     terrainCosts,
     onCostChange,
   } = props;
 
-  const isSearching =
-    gameState === "searching" || gameState === "animatingPath";
+  // Variáveis para controlar o estado da UI
+  const isSearching = gameState === "searching" || gameState === "animatingPath";
+  const isDone = gameState === "done";
+  const isStartButtonDisabled = isSearching || isDone;
+
+  // Função para determinar o texto do botão "Iniciar"
+  const getStartButtonText = () => {
+    if (isDone) {
+      return "Encontrado";
+    }
+    if (isSearching) {
+      return "Buscando...";
+    }
+    return "Iniciar Busca";
+  };
 
   const handleDecrease = () => {
-    // Garante que onSpeedChange seja chamado com um novo valor
     onSpeedChange((prevSpeed) => Math.max(5, prevSpeed - 5));
   };
 
   const handleIncrease = () => {
-    // Garante que onSpeedChange seja chamado com um novo valor
     onSpeedChange((prevSpeed) => Math.min(100, prevSpeed + 5));
   };
 
@@ -61,8 +72,6 @@ function ControlPanel(props) {
           >
             -
           </button>
-          {/* --- AQUI ESTÁ A CORREÇÃO PRINCIPAL --- */}
-          {/* Exibe o valor da prop `animationSpeed` */}
           <span className="speed-display">{animationSpeed} ms</span>
           <button
             onClick={handleIncrease}
@@ -73,7 +82,6 @@ function ControlPanel(props) {
         </div>
       </div>
 
-      {/* --- NOVA SEÇÃO PARA CUSTOS DE TERRENO --- */}
       <div className="control-group">
         <label>Custos dos Terrenos</label>
         <div className="terrain-costs">
@@ -120,14 +128,14 @@ function ControlPanel(props) {
         <button
           className="start-button"
           onClick={onStart}
-          disabled={isSearching}
+          disabled={isStartButtonDisabled} 
         >
-          {isSearching ? "Buscando..." : "Iniciar Busca"}
+          {getStartButtonText()} {/* <-- Lógica do texto atualizada */}
         </button>
         <button
           className="reset-button"
           onClick={onReset}
-          disabled={isSearching}
+          disabled={isSearching} // <-- Este botão não deve ser desabilitado quando "done"
         >
           Gerar Novo Mapa
         </button>
