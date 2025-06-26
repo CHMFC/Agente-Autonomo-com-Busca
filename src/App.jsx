@@ -47,7 +47,6 @@ function App() {
         handleReset();
     }, [handleReset]);
     
-    // CORREÇÃO: Lógica de animação que atualiza o grid com os custos
     const animateSearch = (visitedNodesInOrder, finalPath) => {
         for (let i = 0; i <= visitedNodesInOrder.length; i++) {
             setTimeout(() => {
@@ -56,7 +55,6 @@ function App() {
                     return;
                 }
                 const node = visitedNodesInOrder[i];
-                // Atualiza o grid para refletir o gScore do nó visitado, o que faz o custo aparecer
                 setGrid(prevGrid => {
                     const newGrid = prevGrid.slice();
                     const gridNode = newGrid[node.row][node.col];
