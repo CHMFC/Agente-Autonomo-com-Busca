@@ -1,5 +1,5 @@
 body {
-  background-color: #1a202c; /* Cor de fundo escura de fallback */
+  background-color: #1a202c;
   color: #eceff1;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -9,29 +9,27 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  overflow: hidden; /* Impede barras de rolagem indesejadas */
+  /* Removido o overflow: hidden para não interferir com o scroll do painel */
 }
 
-/* O container principal agora é uma linha que ocupa toda a tela */
 .app {
   display: flex;
-  flex-direction: row; 
-  width: 98vw;
+  flex-direction: row;
+  width: 100vw;
   height: 100vh;
 }
 
-/* Painel Esquerdo para os Controles */
 .left-panel {
-  width: 450px; /* Largura fixa para melhor controle */
-  flex-shrink: 0; /* Impede que o painel encolha */
-  height: 100vh; /* Ocupa toda a altura */
+  width: 450px;
+  flex-shrink: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;     /* Centraliza o conteúdo (título, botões) na HORIZONTAL */
-  justify-content: center; /* Centraliza o conteúdo na VERTICAL */
+  align-items: center;
+  justify-content: center;
   padding: 40px;
   box-sizing: border-box;
-  background-color: rgba(18, 25, 39, 0.85); /* Fundo escuro e semi-transparente */
+  background-color: rgba(18, 25, 39, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -46,47 +44,18 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Painel Direito para o Grid */
 .right-panel {
+  display: flex;
   flex-direction: column;
-  height: 100vh;
-  display: flex;
-  align-items: center;     /* Centraliza o grid na VERTICAL */
-  justify-content: center; /* Centraliza o grid na HORIZONTAL */
-  box-sizing: border-box;
-  overflow: auto; /* Adiciona scroll se o grid for maior que a área */
+  align-items: center;
 }
 
-.grid-controls {
-  height: 10vh;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
+.info-panel {
+  height: 6vh;
 }
 
-.grid-controls button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(18, 25, 39, 0.85);
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  backdrop-filter: blur(5px);
-}
-
-.grid-controls button:hover:not(:disabled) {
-  background-color: rgba(30, 41, 59, 0.9);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
-}
-
-.grid-controls button:disabled {
-  background-color: rgba(18, 25, 39, 0.5);
-  color: #6c757d;
-  cursor: not-allowed;
-  transform: none;
-  border-color: rgba(255, 255, 255, 0.1);
+.grid-panel {
+  margin-top: -4vh;
+  height: 94vh;
+  margin-bottom: -4vh;
 }
