@@ -48,6 +48,7 @@ function App() {
 
   const [totalCost, setTotalCost] = useState(0);
   const [foodsFoundCount, setFoodsFoundCount] = useState(0);
+  const [initialFoodPos, setInitialFoodPos] = useState(null);
 
   const animationStateRef = useRef({
     visitedNodes: [],
@@ -96,16 +97,20 @@ function App() {
       return;
     }
 
-    if (gameState !== "done" && (gameState === "searching" || gameState === "animatingPath")) {
+    if (
+      gameState !== "done" &&
+      (gameState === "searching" || gameState === "animatingPath")
+    ) {
       if (path.length > 0) {
         const finalNode = path[path.length - 1];
         setTotalCost(finalNode.gScore);
         setFoodsFoundCount((prev) => prev + 1);
+
+        setFoodPos(null);
       }
       setGameState("done");
     }
   }, [animationSpeed, isPaused, gameState]);
-
 
   useEffect(() => {
     const isAnimating =
@@ -126,7 +131,8 @@ function App() {
     );
     setGrid(newGrid);
     setAgentPos(newAgentPos);
-    setInitialAgentPos(newAgentPos); // Salva a posição inicial
+    setInitialAgentPos(newAgentPos);
+    setInitialFoodPos(newFoodPos);
     setFoodPos(newFoodPos);
     setPath([]);
     setVisitedNodes([]);
@@ -149,24 +155,26 @@ function App() {
     setFoodsFoundCount(0);
   };
 
-  // ***** FUNÇÃO handleResetAnimation MODIFICADA *****
   const handleResetAnimation = useCallback(() => {
     clearAnimation();
 
-    // Se a animação encontrou a comida, reverte o contador
-    if (gameState === 'done' && path.length > 0) {
-        setFoodsFoundCount(prev => Math.max(0, prev - 1));
+    if (gameState === "done" && path.length > 0) {
+      setFoodsFoundCount((prev) => Math.max(0, prev - 1));
     }
-    
+
     setPath([]);
     setVisitedNodes([]);
     setTotalCost(0);
-    
-    // Retorna o agente para a posição inicial do mapa atual
+
     if (initialAgentPos) {
       setAgentPos(initialAgentPos);
     }
-    
+
+    // Adicione este bloco para restaurar a comida
+    if (initialFoodPos) {
+      setFoodPos(initialFoodPos);
+    }
+
     const newGrid = grid.map((row) => row.map((node) => ({ ...node })));
     resetGridSearchProperties(newGrid);
     setGrid(newGrid);
@@ -178,8 +186,7 @@ function App() {
       visitedIndex: 0,
       pathIndex: 0,
     };
-  }, [grid, gameState, path, initialAgentPos]);
-
+  }, [grid, gameState, path, initialAgentPos, initialFoodPos]); 
 
   useEffect(() => {
     handleNewMap();
